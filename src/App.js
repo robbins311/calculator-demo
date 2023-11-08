@@ -5,53 +5,47 @@ import Invest from "./components/Invest/Invest";
 import Table from "./components/Table/Table";
 
 function App() {
-  const [result, setResult] = useState([]);
-  const resultReset = () => {
-    setResult([]);
-  };
+  const [userInput, setUserInput] = useState(null);
+
   const calculateHandler = (userInput) => {
-    // Should be triggered when form is submitted
-    // You might not directly want to bind it to the submit event on the form though...
-    // setResult([]);
-
     console.log(userInput);
+    setUserInput(userInput);
+  };
+  const yearlyData = [];
 
-    const yearlyData = []; // per-year results
-
-    let currentSavings = +userInput.currentSavings;
-    const yearlyContribution = +userInput.yearlyInterest;
-    const expectedReturn = +userInput.expectedReturn / 100;
+  if (userInput) {
+    let currentSavings = +userInput["current-savings"];
+    const yearlyContribution = +userInput["yearly-contribution"];
+    const expectedReturn = +userInput["expected-return"] / 100;
     const duration = +userInput.duration;
 
-    // console.log(yearlyContribution);
-    // console.log(expectedReturn);
-    // console.log(duration);
-    // The below code calculates yearly results (total savings, interest etc)
     for (let i = 0; i < duration; i++) {
       const yearlyInterest = currentSavings * expectedReturn;
       currentSavings += yearlyInterest + yearlyContribution;
       yearlyData.push({
-        // feel free to change the shape of the data pushed to the array!
         year: i + 1,
         yearlyInterest: yearlyInterest,
         savingsEndOfYear: currentSavings,
         yearlyContribution: yearlyContribution,
       });
     }
-    setResult(yearlyData);
-    console.log(result);
-    // do something with yearlyData ...
-  };
+  }
 
   return (
     <div>
       <Header />
 
-      <Invest onCalculate={calculateHandler} onReset={resultReset} />
+      <Invest onCalculate={calculateHandler} />
 
-      <Table lists={result} />
-      {/* Todo: Show below table conditionally (only once result data is available) */}
-      {/* Show fallback text if no data is available */}
+      {!userInput && (
+        <h2 style={{ textAlign: "center" }}>Found no Investment Calculated.</h2>
+      )}
+      {userInput && (
+        <Table
+          lists={yearlyData}
+          initialInvestment={userInput["current-savings"]}
+        />
+      )}
     </div>
   );
 }

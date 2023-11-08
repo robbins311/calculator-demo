@@ -4,8 +4,15 @@ import styles from "./Table.module.css";
 
 const Table = (props) => {
   if (props.lists.length === 0) {
-    return <h2>Found no Investment Calculated.</h2>;
+    return;
   }
+
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   return (
     <table className={styles.result}>
@@ -23,10 +30,21 @@ const Table = (props) => {
           return (
             <tr key={idx}>
               <td>{result.year}</td>
-              <td>${result.savingsEndOfYear}</td>
-              <td>${result.yearlyInterest}</td>
-              {/* <td>${result.}</td>
-              <td>${result.}</td> */}
+              <td>{formatter.format(result.savingsEndOfYear)}</td>
+              <td>{formatter.format(result.yearlyInterest)}</td>
+              <td>
+                {formatter.format(
+                  result.savingsEndOfYear -
+                    props.initialInvestment -
+                    result.yearlyContribution * result.year
+                )}
+              </td>
+              <td>
+                {formatter.format(
+                  props.initialInvestment +
+                    result.yearlyContribution * result.year
+                )}
+              </td>
             </tr>
           );
         })}

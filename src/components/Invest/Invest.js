@@ -2,49 +2,35 @@ import React, { useState } from "react";
 
 import styles from "./Invest.module.css";
 
+const initialUserInput = {
+  "current-savings": 10000,
+  "yearly-contribution": 1200,
+  "expected-return": 7,
+  duration: 10,
+};
+
 const Invest = (props) => {
   // 빈칸 하나로 제출되면 해당 input style 변경
+  const [userInput, setUserInput] = useState(initialUserInput);
 
-  const [currentSaving, setcurrentSaving] = useState("");
-  const [yearlySaving, setYearlySaving] = useState("");
-  const [returnInput, setReturnInput] = useState("");
-  const [duration, setDuration] = useState("");
-
-  const currentSavingHandler = (event) => {
-    setcurrentSaving(event.target.value);
-  };
-
-  const yearlySavingHandler = (event) => {
-    setYearlySaving(event.target.value);
-  };
-
-  const returnInputHandler = (event) => {
-    setReturnInput(event.target.value);
-  };
-
-  const durationHandler = (event) => {
-    setDuration(event.target.value);
+  // generic event handler
+  const changeHandelr = (identifier, value) => {
+    setUserInput((prevState) => {
+      return {
+        ...prevState,
+        [identifier]: +value, // "+"는 문자열 값을 숫자로 변환함
+      };
+    });
   };
 
   const resetHandler = () => {
-    setcurrentSaving("");
-    setYearlySaving("");
-    setReturnInput("");
-    setDuration("");
-    // props.onReset();
+    setUserInput(initialUserInput);
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
 
-    const investData = {
-      currentSavings: currentSaving,
-      yearlyInterest: yearlySaving,
-      expectedReturn: returnInput,
-      duration: duration,
-    };
-
-    props.onCalculate(investData);
+    props.onCalculate(userInput);
 
     resetHandler();
   };
@@ -56,8 +42,10 @@ const Invest = (props) => {
           <label htmlFor="current-savings">Current Savings ($)</label>
           <input
             type="number"
-            value={currentSaving}
-            onChange={currentSavingHandler}
+            value={userInput["current-savings"]}
+            onChange={(event) => {
+              changeHandelr("current-savings", event.target.value);
+            }}
             id="current-savings"
           />
         </p>
@@ -65,8 +53,10 @@ const Invest = (props) => {
           <label htmlFor="yearly-contribution">Yearly Savings ($)</label>
           <input
             type="number"
-            value={yearlySaving}
-            onChange={yearlySavingHandler}
+            value={userInput[""]}
+            onChange={(event) => {
+              changeHandelr("yearly-contribution", event.target.value);
+            }}
             id="yearly-contribution"
           />
         </p>
@@ -77,17 +67,22 @@ const Invest = (props) => {
             Expected Interest (%, per year)
           </label>
           <input
-            value={returnInput}
-            onChange={returnInputHandler}
+            value={userInput["expected-return"]}
+            onChange={(event) => {
+              changeHandelr("expected-return", event.target.value);
+            }}
             type="number"
             id="expected-return"
           />
         </p>
         <p>
           <label htmlFor="duration">Investment Duration (years)</label>
+          {/*  value={userInput.duration} 이것도 됨 */}
           <input
-            value={duration}
-            onChange={durationHandler}
+            value={userInput["duration"]}
+            onChange={(event) => {
+              changeHandelr("duration", event.target.value);
+            }}
             type="number"
             id="duration"
           />
